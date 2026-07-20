@@ -5,6 +5,7 @@ import com.mojang.math.Axis;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.Minecraft;
@@ -47,5 +48,19 @@ public class ItemInHandRendererMixin {
 		poseStack.mulPose(Axis.ZP.rotationDegrees(settings.appliedRoll()));
 		float scale = settings.appliedScale();
 		poseStack.scale(scale, scale, scale);
+	}
+
+	/**
+	 * Remaps the swing progress that drives the first-person swing arc only.
+	 * This changes how fast the animation *looks*; the real swing timing
+	 * (swingTime / attack cooldown) is never touched.
+	 */
+	@ModifyVariable(method = "renderArmWithItem", at = @At("HEAD"), argsOnly = true, ordinal = 2)
+	private float dm$scaleSwingAnimation(float attack) {
+		float speed = HeldItemSettings.get().appliedSwingSpeed();
+		if (speed == 1.0F || attack <= 0.0F) {
+			return attack;
+		}
+		return Math.min(attack * speed, 1.0F);
 	}
 }

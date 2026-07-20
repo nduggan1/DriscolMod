@@ -16,6 +16,7 @@ Everything the editor changes is purely visual and client-side.
 - **Pos X/Y/Z** — nudge the item's position (fine-tuned units, so small numbers stay controllable)
 - **Pitch / Yaw / Roll** — rotate the item in place
 - **Scale** — weapon size (`1.0` = normal, `2` = double, `0.5` = half)
+- **Swing** — first-person swing animation speed, visual only (`1.0` = normal, higher = snappier). Does not change your real swing/attack rate.
 - **Copy Preset** — copies a `dm1:...` code to clipboard to share
 - **Apply Preset** — paste a friend's code and apply it
 

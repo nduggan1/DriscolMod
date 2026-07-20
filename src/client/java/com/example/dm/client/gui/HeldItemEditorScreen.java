@@ -67,6 +67,8 @@ public class HeldItemEditorScreen extends Screen {
 		addValueField(left, y, settings.rotZ, v -> settings.rotZ = v);
 		y += gap + 4;
 		addValueField(left, y, settings.scale, v -> settings.scale = v);
+		y += gap;
+		addValueField(left, y, settings.swingSpeed, v -> settings.swingSpeed = v);
 		y += gap + 8;
 
 		addRenderableWidget(
@@ -138,7 +140,7 @@ public class HeldItemEditorScreen extends Screen {
 		float[] values = {
 			settings.posX, settings.posY, settings.posZ,
 			settings.rotX, settings.rotY, settings.rotZ,
-			settings.scale
+			settings.scale, settings.swingSpeed
 		};
 		for (int i = 0; i < valueBoxes.size() && i < values.length; i++) {
 			valueBoxes.get(i).setValue(formatFloat(values[i]));
@@ -198,12 +200,13 @@ public class HeldItemEditorScreen extends Screen {
 		drawLabel(graphics, "Pitch", 16, y); y += gap;
 		drawLabel(graphics, "Yaw", 16, y); y += gap;
 		drawLabel(graphics, "Roll", 16, y); y += gap + 4;
-		drawLabel(graphics, "Scale", 16, y);
+		drawLabel(graphics, "Scale", 16, y); y += gap;
+		drawLabel(graphics, "Swing", 16, y);
 
 		if (!statusMessage.isEmpty()) {
 			graphics.text(this.font, statusMessage, 16, this.height - 40, statusColor);
 		}
-		graphics.text(this.font, "Scale 1 = normal, 2 = double, 0.5 = half", 16, this.height - 28, HINT_COLOR);
+		graphics.text(this.font, "Swing = visual speed only (1 = normal)", 16, this.height - 28, HINT_COLOR);
 		graphics.text(this.font, "Share with Copy / Apply Preset", 16, this.height - 16, HINT_COLOR);
 
 		super.extractRenderState(graphics, mouseX, mouseY, a);

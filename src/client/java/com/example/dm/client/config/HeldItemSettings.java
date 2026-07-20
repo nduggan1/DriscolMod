@@ -37,6 +37,8 @@ public final class HeldItemSettings {
 	public float rotY;
 	public float rotZ;
 	public float scale = 1.0F;
+	/** Visual-only first-person swing animation speed. Does NOT change real swing rate. */
+	public float swingSpeed = 1.0F;
 
 	public static HeldItemSettings get() {
 		return instance;
@@ -68,6 +70,10 @@ public final class HeldItemSettings {
 
 	public float appliedScale() {
 		return Math.max(0.05F, scale);
+	}
+
+	public float appliedSwingSpeed() {
+		return Math.max(0.05F, swingSpeed);
 	}
 
 	public static void load() {
@@ -107,6 +113,7 @@ public final class HeldItemSettings {
 		rotY = 0.0F;
 		rotZ = 0.0F;
 		scale = 1.0F;
+		swingSpeed = 1.0F;
 	}
 
 	public void copyFrom(HeldItemSettings other) {
@@ -117,12 +124,16 @@ public final class HeldItemSettings {
 		rotY = other.rotY;
 		rotZ = other.rotZ;
 		scale = other.scale;
+		swingSpeed = other.swingSpeed;
 		sanitize();
 	}
 
 	public void sanitize() {
 		if (scale <= 0.0F) {
 			scale = 1.0F;
+		}
+		if (swingSpeed <= 0.0F) {
+			swingSpeed = 1.0F;
 		}
 	}
 }
