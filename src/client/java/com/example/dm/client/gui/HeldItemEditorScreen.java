@@ -206,7 +206,7 @@ public class HeldItemEditorScreen extends Screen {
 		if (!statusMessage.isEmpty()) {
 			graphics.text(this.font, statusMessage, 16, this.height - 40, statusColor);
 		}
-		graphics.text(this.font, "Swing = visual speed only (1 = normal)", 16, this.height - 28, HINT_COLOR);
+		graphics.text(this.font, "Swing visual speed: 1 = normal, 0.25 = slow-mo", 16, this.height - 28, HINT_COLOR);
 		graphics.text(this.font, "Share with Copy / Apply Preset", 16, this.height - 16, HINT_COLOR);
 
 		super.extractRenderState(graphics, mouseX, mouseY, a);

@@ -73,7 +73,7 @@ public final class HeldItemSettings {
 	}
 
 	public float appliedSwingSpeed() {
-		return Math.max(0.05F, swingSpeed);
+		return Math.max(0.02F, swingSpeed);
 	}
 
 	public static void load() {

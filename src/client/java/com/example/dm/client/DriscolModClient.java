@@ -3,10 +3,12 @@ package com.example.dm.client;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
 import net.minecraft.client.Minecraft;
 
 import com.example.dm.DriscolMod;
+import com.example.dm.client.anim.SwingAnimator;
 import com.example.dm.client.config.HeldItemSettings;
 import com.example.dm.client.gui.HeldItemEditorScreen;
 
@@ -15,6 +17,7 @@ public class DriscolModClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		HeldItemSettings.load();
 		registerCommands();
+		ClientTickEvents.END_CLIENT_TICK.register(SwingAnimator::clientTick);
 		DriscolMod.LOGGER.info("DriscolMod client ready — /dm or /Driscolmod");
 	}
 
