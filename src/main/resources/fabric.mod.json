@@ -3,13 +3,13 @@
 	"id": "dm",
 	"version": "${version}",
 	"name": "DriscolMod",
-	"description": "DriscolMod (dm) — a Fabric mod for Minecraft 26.1.2.",
+	"description": "Edit first-person held item position and rotation with a live hand preview.",
 	"authors": [
 		"Me!"
 	],
 	"contact": {
-		"homepage": "https://github.com/",
-		"sources": "https://github.com/"
+		"homepage": "https://github.com/nduggan1/DriscolMod",
+		"sources": "https://github.com/nduggan1/DriscolMod"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/dm/icon.png",
@@ -23,7 +23,6 @@
 		]
 	},
 	"mixins": [
-		"dm.mixins.json",
 		{
 			"config": "dm.client.mixins.json",
 			"environment": "client"

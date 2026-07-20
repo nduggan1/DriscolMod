@@ -3,7 +3,7 @@
 	"package": "com.example.dm.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"DriscolClientMixin"
+		"ItemInHandRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
