@@ -8,6 +8,13 @@ Edit first-person held item position, rotation, scale, and swing speed with a li
 
 - `/dm`
 - `/Driscolmod`
+- `/dmupdate` — open the updater
+
+## Updates
+
+DriscolMod checks its GitHub releases for a newer build. With **Mod Menu** installed you'll see an "update available" badge and a config button; you can also open the updater any time with `/dmupdate`.
+
+Clicking **Update now** downloads the new jar and replaces your existing one **in place** (a single jar, no duplicates). Because a running jar can't overwrite itself, the swap finishes automatically the next time you launch — you'll see "restart to finish". Your real gameplay is never touched; this only swaps the mod file.
 
 Everything the editor changes is purely visual and client-side.
 

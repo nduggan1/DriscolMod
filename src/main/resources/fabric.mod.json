@@ -20,6 +20,9 @@
 		],
 		"client": [
 			"com.example.dm.client.DriscolModClient"
+		],
+		"modmenu": [
+			"com.example.dm.client.modmenu.DmModMenuApi"
 		]
 	},
 	"mixins": [
