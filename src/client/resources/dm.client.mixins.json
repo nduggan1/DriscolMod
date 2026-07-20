@@ -3,7 +3,8 @@
 	"package": "com.example.dm.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"ItemInHandRendererMixin"
+		"ItemInHandRendererMixin",
+		"LivingEntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

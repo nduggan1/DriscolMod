@@ -2,18 +2,22 @@
 
 Fabric mod for Minecraft **26.1.2** (mod id: `dm`).
 
-Edit the first-person held item's position (XYZ) and rotation (XYZ) with a live hand preview.
+Edit first-person held item position, rotation, scale, and swing speed with a live hand preview.
 
 ## Commands
 
 - `/dm`
 - `/Driscolmod`
 
-Opens the editor on the left. The right side stays clear so your hand/item updates in real time. Attack to check how the swing follows your rotations.
+## Editor
 
-## Config
+- **Pos / Rot** — fine-tuned units (not raw world units), so small numbers stay controllable
+- **Scale** — weapon size (`1.0` = normal)
+- **Swing** — swing animation speed (`1.0` = normal, higher = faster)
+- **Copy Preset** — copies a `dm1:...` code to clipboard to share
+- **Apply Preset** — paste a friend's code and apply it
 
-Saved automatically to `.minecraft/config/dm.json` (also when you hit Save or close the menu).
+Settings save to `.minecraft/config/dm.json`.
 
 ## Build
 
@@ -21,7 +25,7 @@ Saved automatically to `.minecraft/config/dm.json` (also when you hit Save or cl
 gradlew.bat build
 ```
 
-Jar output: `build/libs/`.
+Jar: `build/libs/dm-1.1.0.jar`
 
 ## Requirements
 
@@ -32,3 +36,4 @@ Jar output: `build/libs/`.
 ## License
 
 CC0-1.0
+

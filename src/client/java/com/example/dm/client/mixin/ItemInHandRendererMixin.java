@@ -16,9 +16,8 @@ import net.minecraft.world.item.ItemStack;
 import com.example.dm.client.config.HeldItemSettings;
 
 /**
- * Applies saved XYZ/rotation offsets at the start of first-person hand rendering.
- * Because swing math runs afterward in the same PoseStack, attack swings follow the
- * edited orientation (e.g. Y rotation steers which way the sword arcs).
+ * Applies dampened position/rotation/scale at the start of first-person hand rendering.
+ * Swing math runs afterward, so attack arcs follow the edited orientation.
  */
 @Mixin(ItemInHandRenderer.class)
 public class ItemInHandRendererMixin {
@@ -40,9 +39,11 @@ public class ItemInHandRendererMixin {
 		CallbackInfo ci
 	) {
 		HeldItemSettings settings = HeldItemSettings.get();
-		poseStack.translate(settings.posX, settings.posY, settings.posZ);
-		poseStack.mulPose(Axis.XP.rotationDegrees(settings.rotX));
-		poseStack.mulPose(Axis.YP.rotationDegrees(settings.rotY));
-		poseStack.mulPose(Axis.ZP.rotationDegrees(settings.rotZ));
+		poseStack.translate(settings.appliedPosX(), settings.appliedPosY(), settings.appliedPosZ());
+		poseStack.mulPose(Axis.XP.rotationDegrees(settings.appliedRotX()));
+		poseStack.mulPose(Axis.YP.rotationDegrees(settings.appliedRotY()));
+		poseStack.mulPose(Axis.ZP.rotationDegrees(settings.appliedRotZ()));
+		float scale = settings.appliedScale();
+		poseStack.scale(scale, scale, scale);
 	}
 }
