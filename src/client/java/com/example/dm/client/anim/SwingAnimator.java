@@ -12,16 +12,16 @@ import com.example.dm.client.config.HeldItemSettings;
  *
  * <p>Vanilla drives the swing arc from the real {@code swingTime}, which resets every
  * time you click. That makes low speeds look cut off and makes spam-clicking restart
- * the arc. Instead we run our own progress 0..1 that always plays the full arc at the
- * chosen speed, ignores new clicks until the current arc finishes, and only chains into
- * the next arc once the current one completes. The real swing/attack timing is untouched.
+ * the arc. Instead we run our own progress 0..1 that plays the full arc at the chosen
+ * speed. A new click only restarts the visual arc once it has passed the configurable
+ * reset threshold (e.g. 80%); clicks before that are ignored visually. Nothing here
+ * touches the real swing/attack timing — spamming still attacks normally in game.
  */
 public final class SwingAnimator {
 	/** Baseline arc length in ticks at speed 1.0 (matches vanilla default WHACK swing). */
 	private static final float BASE_TICKS = 6.0F;
 
 	private static boolean active;
-	private static boolean pending;
 	private static float progress;
 	private static float prevProgress;
 	private static InteractionHand hand = InteractionHand.MAIN_HAND;
@@ -49,7 +49,6 @@ public final class SwingAnimator {
 		LocalPlayer player = client.player;
 		if (player == null) {
 			active = false;
-			pending = false;
 			prevSwinging = false;
 			prevSwingTime = 0;
 			return;
@@ -57,17 +56,18 @@ public final class SwingAnimator {
 
 		boolean swingingNow = player.swinging;
 		int swingTimeNow = player.swingTime;
+		// A fresh in-game swing: either swinging just started, or swingTime was reset by a new click.
 		boolean newSwingEdge = (swingingNow && !prevSwinging) || (swingingNow && swingTimeNow < prevSwingTime);
 		prevSwinging = swingingNow;
 		prevSwingTime = swingTimeNow;
 
-		if (!active) {
-			if (swingingNow) {
+		if (newSwingEdge) {
+			float threshold = HeldItemSettings.get().appliedResetFraction();
+			// Start when idle, or restart only once the arc has passed the reset threshold.
+			// Clicks before the threshold are ignored visually (but still attack in game).
+			if (!active || progress >= threshold) {
 				startArc(player);
 			}
-		} else if (newSwingEdge) {
-			// A click landed mid-animation: remember it, but don't restart the current arc.
-			pending = true;
 		}
 
 		if (active) {
@@ -78,11 +78,6 @@ public final class SwingAnimator {
 			if (progress >= 1.0F) {
 				progress = 1.0F;
 				active = false;
-				// Only after the full arc completes do we allow the next swing.
-				if (pending || swingingNow) {
-					pending = false;
-					startArc(player);
-				}
 			}
 		}
 	}

@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -22,6 +23,8 @@ import com.example.dm.client.config.PresetCodec;
 public class HeldItemEditorScreen extends Screen {
 	private static final int PANEL_WIDTH = 230;
 	private static final int FIELD_WIDTH = 130;
+	private static final int START_Y = 26;
+	private static final int GAP = 18;
 	private static final int LABEL_COLOR = 0xFFE8E8E8;
 	private static final int HINT_COLOR = 0xFFAAAAAA;
 	private static final int STATUS_OK = 0xFF7DFFA0;
@@ -51,25 +54,27 @@ public class HeldItemEditorScreen extends Screen {
 		valueBoxes.clear();
 		HeldItemSettings settings = HeldItemSettings.get();
 		int left = 16;
-		int y = 32;
-		int gap = 20;
+		int y = START_Y;
 
 		addValueField(left, y, settings.posX, v -> settings.posX = v);
-		y += gap;
+		y += GAP;
 		addValueField(left, y, settings.posY, v -> settings.posY = v);
-		y += gap;
+		y += GAP;
 		addValueField(left, y, settings.posZ, v -> settings.posZ = v);
-		y += gap + 4;
+		y += GAP + 2;
 		addValueField(left, y, settings.rotX, v -> settings.rotX = v);
-		y += gap;
+		y += GAP;
 		addValueField(left, y, settings.rotY, v -> settings.rotY = v);
-		y += gap;
+		y += GAP;
 		addValueField(left, y, settings.rotZ, v -> settings.rotZ = v);
-		y += gap + 4;
+		y += GAP + 2;
 		addValueField(left, y, settings.scale, v -> settings.scale = v);
-		y += gap;
+		y += GAP;
 		addValueField(left, y, settings.swingSpeed, v -> settings.swingSpeed = v);
-		y += gap + 8;
+		y += GAP + 6;
+
+		addRenderableWidget(new ResetThresholdSlider(left, y, 190, 20));
+		y += 22;
 
 		addRenderableWidget(
 			Button.builder(Component.literal("Reset"), button -> resetValues())
@@ -94,7 +99,7 @@ public class HeldItemEditorScreen extends Screen {
 				.bounds(left, y, 190, 20)
 				.build()
 		);
-		y += 28;
+		y += 26;
 
 		presetBox = new EditBox(this.font, left, y, 190, 18, Component.literal("Preset"));
 		presetBox.setMaxLength(512);
@@ -133,6 +138,7 @@ public class HeldItemEditorScreen extends Screen {
 		refreshBoxesFromSettings();
 		HeldItemSettings.save();
 		setStatus("Reset to defaults", STATUS_OK);
+		this.rebuildWidgets();
 	}
 
 	private void refreshBoxesFromSettings() {
@@ -171,6 +177,7 @@ public class HeldItemEditorScreen extends Screen {
 				presetBox.setValue(PresetCodec.encode(HeldItemSettings.get()));
 			}
 			setStatus("Preset applied", STATUS_OK);
+			this.rebuildWidgets();
 		} catch (IllegalArgumentException e) {
 			setStatus("Invalid preset code", STATUS_ERR);
 		}
@@ -190,24 +197,20 @@ public class HeldItemEditorScreen extends Screen {
 
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-		graphics.text(this.font, this.title, 16, 10, LABEL_COLOR);
-
-		int y = 32;
-		int gap = 20;
-		drawLabel(graphics, "Pos X", 16, y); y += gap;
-		drawLabel(graphics, "Pos Y", 16, y); y += gap;
-		drawLabel(graphics, "Pos Z", 16, y); y += gap + 4;
-		drawLabel(graphics, "Pitch", 16, y); y += gap;
-		drawLabel(graphics, "Yaw", 16, y); y += gap;
-		drawLabel(graphics, "Roll", 16, y); y += gap + 4;
-		drawLabel(graphics, "Scale", 16, y); y += gap;
+		int y = START_Y;
+		drawLabel(graphics, "Pos X", 16, y); y += GAP;
+		drawLabel(graphics, "Pos Y", 16, y); y += GAP;
+		drawLabel(graphics, "Pos Z", 16, y); y += GAP + 2;
+		drawLabel(graphics, "Pitch", 16, y); y += GAP;
+		drawLabel(graphics, "Yaw", 16, y); y += GAP;
+		drawLabel(graphics, "Roll", 16, y); y += GAP + 2;
+		drawLabel(graphics, "Scale", 16, y); y += GAP;
 		drawLabel(graphics, "Swing", 16, y);
 
 		if (!statusMessage.isEmpty()) {
-			graphics.text(this.font, statusMessage, 16, this.height - 40, statusColor);
+			graphics.text(this.font, statusMessage, 16, this.height - 26, statusColor);
 		}
-		graphics.text(this.font, "Swing visual speed: 1 = normal, 0.25 = slow-mo", 16, this.height - 28, HINT_COLOR);
-		graphics.text(this.font, "Share with Copy / Apply Preset", 16, this.height - 16, HINT_COLOR);
+		graphics.text(this.font, "Swing 1 = normal, 0.25 = slow-mo (visual)", 16, this.height - 14, HINT_COLOR);
 
 		super.extractRenderState(graphics, mouseX, mouseY, a);
 	}
@@ -234,6 +237,25 @@ public class HeldItemEditorScreen extends Screen {
 			return Float.parseFloat(text);
 		} catch (NumberFormatException e) {
 			return null;
+		}
+	}
+
+	/** Slider mapping 0..1 to a 0-100% swing reset threshold. */
+	private static final class ResetThresholdSlider extends AbstractSliderButton {
+		ResetThresholdSlider(int x, int y, int width, int height) {
+			super(x, y, width, height, Component.empty(), HeldItemSettings.get().appliedResetFraction());
+			updateMessage();
+		}
+
+		@Override
+		protected void updateMessage() {
+			int pct = Math.round((float) this.value * 100.0F);
+			setMessage(Component.literal("Reset threshold: " + pct + "%"));
+		}
+
+		@Override
+		protected void applyValue() {
+			HeldItemSettings.get().swingResetThreshold = (float) (this.value * 100.0);
 		}
 	}
 }

@@ -39,6 +39,8 @@ public final class HeldItemSettings {
 	public float scale = 1.0F;
 	/** Visual-only first-person swing animation speed. Does NOT change real swing rate. */
 	public float swingSpeed = 1.0F;
+	/** Percent (0-100) of the swing arc that must play before a new click can restart it. */
+	public float swingResetThreshold = 80.0F;
 
 	public static HeldItemSettings get() {
 		return instance;
@@ -74,6 +76,11 @@ public final class HeldItemSettings {
 
 	public float appliedSwingSpeed() {
 		return Math.max(0.02F, swingSpeed);
+	}
+
+	/** Reset threshold as a 0..1 fraction of the swing arc. */
+	public float appliedResetFraction() {
+		return Math.max(0.0F, Math.min(1.0F, swingResetThreshold / 100.0F));
 	}
 
 	public static void load() {
@@ -114,6 +121,7 @@ public final class HeldItemSettings {
 		rotZ = 0.0F;
 		scale = 1.0F;
 		swingSpeed = 1.0F;
+		swingResetThreshold = 80.0F;
 	}
 
 	public void copyFrom(HeldItemSettings other) {
@@ -125,6 +133,7 @@ public final class HeldItemSettings {
 		rotZ = other.rotZ;
 		scale = other.scale;
 		swingSpeed = other.swingSpeed;
+		swingResetThreshold = other.swingResetThreshold;
 		sanitize();
 	}
 
@@ -135,5 +144,6 @@ public final class HeldItemSettings {
 		if (swingSpeed <= 0.0F) {
 			swingSpeed = 1.0F;
 		}
+		swingResetThreshold = Math.max(0.0F, Math.min(100.0F, swingResetThreshold));
 	}
 }
