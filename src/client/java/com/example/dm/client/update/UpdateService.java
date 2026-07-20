@@ -277,18 +277,26 @@ public final class UpdateService {
 		String dest = destJar.toAbsolutePath().toString();
 
 		if (windows) {
-			Path bat = Files.createTempFile("dm-update-", ".bat");
-			String script = "@echo off\r\n"
-				+ ":waitloop\r\n"
-				+ "del \"" + old + "\" >nul 2>&1\r\n"
-				+ "if exist \"" + old + "\" (\r\n"
-				+ "  ping -n 2 127.0.0.1 >nul\r\n"
-				+ "  goto waitloop\r\n"
-				+ ")\r\n"
-				+ "move /y \"" + staged + "\" \"" + dest + "\" >nul 2>&1\r\n"
-				+ "del \"%~f0\" >nul 2>&1\r\n";
-			Files.writeString(bat, script);
-			new ProcessBuilder("cmd.exe", "/c", "start", "", "/min", "\"" + bat.toAbsolutePath() + "\"")
+			// Run a hidden VBScript via wscript so no console window ever appears.
+			// It waits for the game to release the old jar, swaps in the new one, and cleans up.
+			Path vbs = Files.createTempFile("dm-update-", ".vbs");
+			String script = "Dim fso, oldJar, staged, dest\r\n"
+				+ "oldJar = \"" + old + "\"\r\n"
+				+ "staged = \"" + staged + "\"\r\n"
+				+ "dest = \"" + dest + "\"\r\n"
+				+ "Set fso = CreateObject(\"Scripting.FileSystemObject\")\r\n"
+				+ "On Error Resume Next\r\n"
+				+ "Do\r\n"
+				+ "  If fso.FileExists(oldJar) Then fso.DeleteFile oldJar, True\r\n"
+				+ "  If Not fso.FileExists(oldJar) Then Exit Do\r\n"
+				+ "  WScript.Sleep 1000\r\n"
+				+ "Loop\r\n"
+				+ "If fso.FileExists(dest) Then fso.DeleteFile dest, True\r\n"
+				+ "If fso.FileExists(staged) Then fso.MoveFile staged, dest\r\n"
+				+ "fso.DeleteFolder fso.GetParentFolderName(staged), True\r\n"
+				+ "fso.DeleteFile WScript.ScriptFullName, True\r\n";
+			Files.writeString(vbs, script);
+			new ProcessBuilder("wscript.exe", "//B", "//Nologo", vbs.toAbsolutePath().toString())
 				.start();
 		} else {
 			Path sh = Files.createTempFile("dm-update-", ".sh");

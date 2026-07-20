@@ -107,7 +107,7 @@ public class HeldItemEditorScreen extends Screen {
 		y += 24;
 
 		this.presetY = y;
-		presetBox = new EditBox(this.font, LABEL_X + 4, y + 3, PANEL_W - 2 * PAD - 8, 12, Component.literal("Preset"));
+		presetBox = new EditBox(this.font, LABEL_X + 4, y + 5, PANEL_W - 2 * PAD - 8, 12, Component.literal("Preset"));
 		presetBox.setBordered(false);
 		presetBox.setMaxLength(512);
 		presetBox.setTextColor(Theme.TEXT);
@@ -131,7 +131,7 @@ public class HeldItemEditorScreen extends Screen {
 	private int addValueRow(int y, String label, float step, Supplier<Float> getter, Consumer<Float> setter) {
 		rows.add(new Row(label, y));
 
-		EditBox box = new EditBox(this.font, FIELD_X + 4, y - 3, FIELD_W - 6, 14, Component.literal(label));
+		EditBox box = new EditBox(this.font, FIELD_X + 4, y, FIELD_W - 6, 14, Component.literal(label));
 		box.setBordered(false);
 		box.setMaxLength(16);
 		box.setTextColor(Theme.TEXT);
@@ -208,7 +208,7 @@ public class HeldItemEditorScreen extends Screen {
 		Theme.separator(graphics, PANEL_X + PAD, PANEL_Y + 26, PANEL_W - 2 * PAD);
 
 		for (Row row : rows) {
-			graphics.text(this.font, row.label(), LABEL_X, row.y() + 1, Theme.TEXT);
+			graphics.text(this.font, row.label(), LABEL_X, row.y(), Theme.TEXT);
 			Theme.field(graphics, FIELD_X, row.y() - 4, FIELD_W, 16, false);
 		}
 
