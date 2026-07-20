@@ -1,17 +1,22 @@
 package com.example.dm.client.update;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
+import com.example.dm.client.gui.widget.DmButton;
+import com.example.dm.client.gui.widget.Theme;
+
 /**
- * Simple updater UI. Opened via {@code /dmupdate} or the Mod Menu config button.
+ * Updater UI. Opened via {@code /dmupdate}, the hub, or the Mod Menu config button.
  * Works with or without Mod Menu installed.
  */
 public class UpdateScreen extends Screen {
+	private static final int CARD_W = 300;
+	private static final int CARD_H = 150;
+
 	private final Screen parent;
-	private Button updateButton;
+	private DmButton updateButton;
 
 	public UpdateScreen(Screen parent) {
 		super(Component.literal("DriscolMod Updates"));
@@ -20,24 +25,18 @@ public class UpdateScreen extends Screen {
 
 	@Override
 	protected void init() {
-		int cx = this.width / 2;
-		int y = this.height / 2 - 20;
+		int cardX = (this.width - CARD_W) / 2;
+		int cardY = (this.height - CARD_H) / 2;
+		int bx = cardX + 20;
+		int bw = CARD_W - 40;
+		int y = cardY + CARD_H - 74;
 
-		addRenderableWidget(
-			Button.builder(Component.literal("Check for updates"), button -> UpdateService.checkAsync())
-				.bounds(cx - 100, y, 200, 20)
-				.build()
-		);
-		updateButton = addRenderableWidget(
-			Button.builder(Component.literal("Update now"), button -> UpdateService.startUpdateAsync())
-				.bounds(cx - 100, y + 24, 200, 20)
-				.build()
-		);
-		addRenderableWidget(
-			Button.builder(Component.literal("Done"), button -> onClose())
-				.bounds(cx - 100, y + 48, 200, 20)
-				.build()
-		);
+		addRenderableWidget(DmButton.secondary(bx, y, bw, 20, "Check for updates", UpdateService::checkAsync));
+		y += 24;
+		updateButton = DmButton.primary(bx, y, bw, 20, "Update now", UpdateService::startUpdateAsync);
+		addRenderableWidget(updateButton);
+		y += 24;
+		addRenderableWidget(DmButton.secondary(bx, y, bw, 18, "Back", this::onClose));
 
 		if (UpdateService.state() == UpdateService.State.IDLE) {
 			UpdateService.checkAsync();
@@ -45,25 +44,34 @@ public class UpdateScreen extends Screen {
 	}
 
 	@Override
+	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+		Theme.screenBackground(graphics, this.width, this.height);
+	}
+
+	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-		super.extractRenderState(graphics, mouseX, mouseY, a);
+		int cardX = (this.width - CARD_W) / 2;
+		int cardY = (this.height - CARD_H) / 2;
+		Theme.panel(graphics, cardX, cardY, CARD_W, CARD_H);
 
-		updateButton.active = UpdateService.updateAvailable();
-
-		int cx = this.width / 2;
-		int top = this.height / 2 - 60;
-		graphics.centeredText(this.font, this.title, cx, top, 0xFFFFFFFF);
-		graphics.centeredText(this.font, Component.literal("Installed: v" + UpdateService.currentVersion()), cx, top + 14, 0xFFC0C0C0);
+		int x = cardX + 16;
+		graphics.text(this.font, Component.literal("Updates"), x, cardY + 14, Theme.TEXT_ACCENT);
+		Theme.separator(graphics, x, cardY + 28, CARD_W - 32);
+		graphics.text(this.font, "Installed: v" + UpdateService.currentVersion(), x, cardY + 36, Theme.TEXT_MUTED);
 
 		String msg = UpdateService.message();
 		if (!msg.isEmpty()) {
 			int color = switch (UpdateService.state()) {
-				case UPDATE_AVAILABLE, STAGED -> 0xFF7DFFA0;
+				case UPDATE_AVAILABLE, STAGED -> Theme.TEXT_ACCENT;
 				case ERROR -> 0xFFFF8080;
-				default -> 0xFFAAAAAA;
+				default -> Theme.TEXT_MUTED;
 			};
-			graphics.centeredText(this.font, Component.literal(msg), cx, top + 28, color);
+			graphics.text(this.font, msg, x, cardY + 50, color);
 		}
+
+		updateButton.active = UpdateService.updateAvailable();
+
+		super.extractRenderState(graphics, mouseX, mouseY, a);
 	}
 
 	@Override

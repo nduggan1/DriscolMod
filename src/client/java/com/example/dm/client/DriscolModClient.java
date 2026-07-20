@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import com.example.dm.DriscolMod;
 import com.example.dm.client.anim.SwingAnimator;
 import com.example.dm.client.config.HeldItemSettings;
-import com.example.dm.client.gui.HeldItemEditorScreen;
+import com.example.dm.client.gui.DriscolModScreen;
 import com.example.dm.client.update.UpdateScreen;
 import com.example.dm.client.update.UpdateService;
 
@@ -34,12 +34,12 @@ public class DriscolModClient implements ClientModInitializer {
 	}
 
 	private static int openEditor(Minecraft client) {
-		client.execute(() -> client.setScreen(new HeldItemEditorScreen()));
+		client.execute(() -> client.setScreen(new DriscolModScreen()));
 		return 1;
 	}
 
 	private static int openUpdates(Minecraft client) {
-		client.execute(() -> client.setScreen(new UpdateScreen(client.screen)));
+		client.execute(() -> client.setScreen(new UpdateScreen(null)));
 		return 1;
 	}
 }

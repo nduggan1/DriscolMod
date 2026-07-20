@@ -10,7 +10,7 @@ import com.terraformersmc.modmenu.api.UpdateInfo;
 
 import net.minecraft.network.chat.Component;
 
-import com.example.dm.client.update.UpdateScreen;
+import com.example.dm.client.gui.DriscolModScreen;
 import com.example.dm.client.update.UpdateService;
 
 /**
@@ -20,7 +20,7 @@ import com.example.dm.client.update.UpdateService;
 public class DmModMenuApi implements ModMenuApi {
 	@Override
 	public ConfigScreenFactory<?> getModConfigScreenFactory() {
-		return UpdateScreen::new;
+		return DriscolModScreen::new;
 	}
 
 	@Override
