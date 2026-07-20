@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "dm",
+	"version": "${version}",
+	"name": "DriscolMod",
+	"description": "DriscolMod (dm) — a Fabric mod for Minecraft 26.1.2.",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://github.com/",
+		"sources": "https://github.com/"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/dm/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.example.dm.DriscolMod"
+		],
+		"client": [
+			"com.example.dm.client.DriscolModClient"
+		]
+	},
+	"mixins": [
+		"dm.mixins.json",
+		{
+			"config": "dm.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

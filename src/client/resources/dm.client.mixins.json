@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"package": "com.example.dm.client.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"DriscolClientMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
