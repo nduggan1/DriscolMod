@@ -17,6 +17,7 @@ import com.example.dm.client.config.PresetCodec;
 
 /**
  * Left-side editor; right side stays clear so the first-person hand preview stays visible.
+ * Everything edited here is a purely visual, client-side change.
  */
 public class HeldItemEditorScreen extends Screen {
 	private static final int PANEL_WIDTH = 230;
@@ -53,21 +54,19 @@ public class HeldItemEditorScreen extends Screen {
 		int y = 32;
 		int gap = 20;
 
-		addValueField(left, y, "Pos X", settings.posX, v -> settings.posX = v);
+		addValueField(left, y, settings.posX, v -> settings.posX = v);
 		y += gap;
-		addValueField(left, y, "Pos Y", settings.posY, v -> settings.posY = v);
+		addValueField(left, y, settings.posY, v -> settings.posY = v);
 		y += gap;
-		addValueField(left, y, "Pos Z", settings.posZ, v -> settings.posZ = v);
+		addValueField(left, y, settings.posZ, v -> settings.posZ = v);
 		y += gap + 4;
-		addValueField(left, y, "Rot X", settings.rotX, v -> settings.rotX = v);
+		addValueField(left, y, settings.rotX, v -> settings.rotX = v);
 		y += gap;
-		addValueField(left, y, "Rot Y", settings.rotY, v -> settings.rotY = v);
+		addValueField(left, y, settings.rotY, v -> settings.rotY = v);
 		y += gap;
-		addValueField(left, y, "Rot Z", settings.rotZ, v -> settings.rotZ = v);
+		addValueField(left, y, settings.rotZ, v -> settings.rotZ = v);
 		y += gap + 4;
-		addValueField(left, y, "Scale", settings.scale, v -> settings.scale = v);
-		y += gap;
-		addValueField(left, y, "Swing", settings.swingSpeed, v -> settings.swingSpeed = v);
+		addValueField(left, y, settings.scale, v -> settings.scale = v);
 		y += gap + 8;
 
 		addRenderableWidget(
@@ -113,8 +112,8 @@ public class HeldItemEditorScreen extends Screen {
 		);
 	}
 
-	private void addValueField(int left, int y, String label, float initial, Consumer<Float> setter) {
-		EditBox box = new EditBox(this.font, left + 58, y - 4, FIELD_WIDTH, 18, Component.literal(label));
+	private void addValueField(int left, int y, float initial, Consumer<Float> setter) {
+		EditBox box = new EditBox(this.font, left + 58, y - 4, FIELD_WIDTH, 18, Component.literal("value"));
 		box.setMaxLength(16);
 		box.setValue(formatFloat(initial));
 		box.setResponder(text -> {
@@ -139,7 +138,7 @@ public class HeldItemEditorScreen extends Screen {
 		float[] values = {
 			settings.posX, settings.posY, settings.posZ,
 			settings.rotX, settings.rotY, settings.rotZ,
-			settings.scale, settings.swingSpeed
+			settings.scale
 		};
 		for (int i = 0; i < valueBoxes.size() && i < values.length; i++) {
 			valueBoxes.get(i).setValue(formatFloat(values[i]));
@@ -196,16 +195,15 @@ public class HeldItemEditorScreen extends Screen {
 		drawLabel(graphics, "Pos X", 16, y); y += gap;
 		drawLabel(graphics, "Pos Y", 16, y); y += gap;
 		drawLabel(graphics, "Pos Z", 16, y); y += gap + 4;
-		drawLabel(graphics, "Rot X", 16, y); y += gap;
-		drawLabel(graphics, "Rot Y", 16, y); y += gap;
-		drawLabel(graphics, "Rot Z", 16, y); y += gap + 4;
-		drawLabel(graphics, "Scale", 16, y); y += gap;
-		drawLabel(graphics, "Swing", 16, y);
+		drawLabel(graphics, "Pitch", 16, y); y += gap;
+		drawLabel(graphics, "Yaw", 16, y); y += gap;
+		drawLabel(graphics, "Roll", 16, y); y += gap + 4;
+		drawLabel(graphics, "Scale", 16, y);
 
 		if (!statusMessage.isEmpty()) {
 			graphics.text(this.font, statusMessage, 16, this.height - 40, statusColor);
 		}
-		graphics.text(this.font, "Smaller numbers = fine control", 16, this.height - 28, HINT_COLOR);
+		graphics.text(this.font, "Scale 1 = normal, 2 = double, 0.5 = half", 16, this.height - 28, HINT_COLOR);
 		graphics.text(this.font, "Share with Copy / Apply Preset", 16, this.height - 16, HINT_COLOR);
 
 		super.extractRenderState(graphics, mouseX, mouseY, a);

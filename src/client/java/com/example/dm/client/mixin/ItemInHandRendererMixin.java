@@ -7,42 +7,44 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 import com.example.dm.client.config.HeldItemSettings;
 
 /**
- * Applies dampened position/rotation/scale at the start of first-person hand rendering.
- * Swing math runs afterward, so attack arcs follow the edited orientation.
+ * Purely visual, client-side first-person tweaks. Applied at the item render step,
+ * after vanilla has positioned and swung the item, so position/rotation/scale all
+ * pivot around the item itself instead of the camera.
  */
 @Mixin(ItemInHandRenderer.class)
 public class ItemInHandRendererMixin {
-	@Inject(
-		method = "renderArmWithItem",
-		at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V", shift = At.Shift.AFTER)
-	)
+	@Inject(method = "renderItem", at = @At("HEAD"))
 	private void dm$applyHeldItemTransform(
-		AbstractClientPlayer player,
-		float frameInterp,
-		float xRot,
-		InteractionHand hand,
-		float attack,
+		LivingEntity mob,
 		ItemStack itemStack,
-		float inverseArmHeight,
+		ItemDisplayContext type,
 		PoseStack poseStack,
 		SubmitNodeCollector submitNodeCollector,
 		int lightCoords,
 		CallbackInfo ci
 	) {
+		if (!type.firstPerson()) {
+			return;
+		}
+		if (mob != Minecraft.getInstance().player) {
+			return;
+		}
+
 		HeldItemSettings settings = HeldItemSettings.get();
 		poseStack.translate(settings.appliedPosX(), settings.appliedPosY(), settings.appliedPosZ());
-		poseStack.mulPose(Axis.XP.rotationDegrees(settings.appliedRotX()));
-		poseStack.mulPose(Axis.YP.rotationDegrees(settings.appliedRotY()));
-		poseStack.mulPose(Axis.ZP.rotationDegrees(settings.appliedRotZ()));
+		poseStack.mulPose(Axis.XP.rotationDegrees(settings.appliedPitch()));
+		poseStack.mulPose(Axis.YP.rotationDegrees(settings.appliedYaw()));
+		poseStack.mulPose(Axis.ZP.rotationDegrees(settings.appliedRoll()));
 		float scale = settings.appliedScale();
 		poseStack.scale(scale, scale, scale);
 	}

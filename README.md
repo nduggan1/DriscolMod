@@ -9,11 +9,13 @@ Edit first-person held item position, rotation, scale, and swing speed with a li
 - `/dm`
 - `/Driscolmod`
 
+Everything the editor changes is purely visual and client-side.
+
 ## Editor
 
-- **Pos / Rot** — fine-tuned units (not raw world units), so small numbers stay controllable
-- **Scale** — weapon size (`1.0` = normal)
-- **Swing** — swing animation speed (`1.0` = normal, higher = faster)
+- **Pos X/Y/Z** — nudge the item's position (fine-tuned units, so small numbers stay controllable)
+- **Pitch / Yaw / Roll** — rotate the item in place
+- **Scale** — weapon size (`1.0` = normal, `2` = double, `0.5` = half)
 - **Copy Preset** — copies a `dm1:...` code to clipboard to share
 - **Apply Preset** — paste a friend's code and apply it
 
